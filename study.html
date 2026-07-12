@@ -240,6 +240,58 @@
   <p><b>Decryption is just math (code) + a key.</b> Anything that has the same recipe and the same key can unscramble it. Those online decrypt websites are just running that recipe for you.</p>
   <div class="analogy">🔧 <b>Analogy:</b> this page is a locked box that arrives <b>with the key taped to the lid</b>. The "recipe" (the <code>crypto-js</code> library) and both keys are shipped <i>inside the page</i>, so your browser unlocks it itself, instantly. No website needed.</div>
   <div class="take"><div class="t">Key takeaway — the important one</div><p>Because the key travels <b>with</b> the page, this "encryption" is really just a <b>disguise</b>. It fools a lazy scanner that only <i>reads</i> the page's text — but not anyone who <i>runs</i> it or knows to grab the key. That's exactly why we cracked it open. → <b>Obfuscation, not protection.</b></p></div>
+
+  <h3>🔬 Full detail — exactly how the lock &amp; unlock work</h3>
+  <p class="sub">Plain steps first, then the precise technical recipe underneath.</p>
+  <p><b>There are two separate locks in this one page:</b></p>
+  <ul class="clean">
+    <li><b>Lock 1 (small)</b> — hides the secret server address. Password: <code>URL_KEY = "UrLk3yShopEase01"</code></li>
+    <li><b>Lock 2 (big)</b> — hides the entire black page. Password: <code>PASSPHRASE = "98yNCjeAfWMwk0wI"</code></li>
+  </ul>
+
+  <h3 style="font-size:1rem;color:var(--amber)">🔒 How it gets LOCKED (encryption — the scammer does this once)</h3>
+  <ul class="clean">
+    <li>Start with the plain text — the server URL, or the whole black-page HTML.</li>
+    <li>Generate a random <b>8-byte salt</b> (a pinch of randomness).</li>
+    <li>Mix <b>password + salt</b> through the <b>MD5</b> hash to produce a <b>32-byte key</b> and a <b>16-byte IV</b> (this step is OpenSSL's <code>EVP_BytesToKey</code>).</li>
+    <li>Scramble the text with <b>AES-256 in CBC mode</b> using that key + IV.</li>
+    <li>Glue together <code>"Salted__"</code> + the salt + the scrambled bytes, then <b>Base64</b> the whole thing → that's why every blob starts with <code>U2FsdGVkX1</code> (Base64 for the word "Salted__").</li>
+  </ul>
+
+  <h3 style="font-size:1rem;color:var(--green)">🔓 How your BROWSER UNLOCKS it (decryption — on every single visit)</h3>
+  <ul class="clean">
+    <li>Base64-decode → recover <code>"Salted__"</code>, the 8-byte salt, and the scrambled bytes.</li>
+    <li>Read the <b>salt</b> back out of the front.</li>
+    <li>Re-mix <b>password + that same salt</b> (identical MD5 steps) → rebuild the <b>exact same key + IV</b>. <i>No key is stored anywhere</i> — the salt rides along with the data and the password is already in the page, so the key is regenerated on the spot.</li>
+    <li><b>AES-256-CBC decrypt</b> the scrambled bytes with that key + IV.</li>
+    <li>Strip the padding → out pops the original text (the URL, or the full HTML).</li>
+  </ul>
+
+  <div class="take"><div class="t">Why no "online tool" is ever needed</div><p><code>crypto-js.min.js</code> is a complete AES + MD5 + Base64 engine written in JavaScript, loaded straight into the page. So the <b>recipe runs locally</b> — and the <b>passwords are in the page too</b>. Recipe + password both present → the browser unlocks it in milliseconds, fully offline.</p></div>
+
+  <h3 style="font-size:1rem">The exact recipe (technical)</h3>
+  <div class="scroll"><table>
+    <tr><th>Piece</th><th>What this specimen uses</th></tr>
+    <tr><td>Crypto library</td><td><b>CryptoJS 4.2.0</b> — pure JavaScript, loaded in the page</td></tr>
+    <tr><td>Cipher</td><td><b>AES-256, CBC mode</b>, PKCS7 padding</td></tr>
+    <tr><td>Format</td><td>CryptoJS "passphrase" mode = <b>OpenSSL-compatible salted</b> format</td></tr>
+    <tr><td>Key derivation</td><td><b>EVP_BytesToKey</b>, hash = MD5, 1 round: salt + password → 32-byte key + 16-byte IV</td></tr>
+    <tr><td>Container</td><td><code>"Salted__"</code> (8 bytes) + salt (8 bytes) + ciphertext → Base64</td></tr>
+  </table></div>
+
+  <h3 style="font-size:1rem">Reproduce it yourself — proof it's just standard crypto</h3>
+  <p class="sub">The same plain <code>openssl</code> command undoes it — no special tool, because the format is the OpenSSL standard:</p>
+  <pre><span class="c"># Stage 1 — reveal the hidden server URL (password = URL_KEY)</span>
+openssl enc -aes-256-cbc -d -a -md md5 -pass pass:UrLk3yShopEase01 -in origin.b64
+<span class="hl"># → https://node.apigetdata.click</span>
+
+<span class="c"># Stage 2 — decrypt the black-page payload (password = PASSPHRASE)</span>
+openssl enc -aes-256-cbc -d -a -md md5 -pass pass:98yNCjeAfWMwk0wI -in cipher.txt
+<span class="c"># the big payload is one giant base64 line — wrap it first or openssl errors:</span>
+<span class="c">#   fold -w 76 cipher.txt | openssl enc -aes-256-cbc -d -a -md md5 -pass pass:98yNCjeAfWMwk0wI</span></pre>
+
+  <div class="take"><div class="t">Security lesson</div><p>The password ships <b>inside the page</b>, so anyone can rebuild the key and decrypt — exactly what we did. The <b>salt is not a secret</b> (it's public, glued to the front of the ciphertext); its only job is to make identical texts encrypt to different blobs. Real protection keeps the key on a server you never see. Here the "encryption" only stops a scanner that <i>reads</i> the file without <i>running</i> it → <b>obfuscation, not protection.</b></p></div>
+
 </div></section>
 
 <!-- 7 -->
@@ -369,6 +421,37 @@
     <li><b>What actually kills it:</b> URL/domain <b>blocklisting</b> (Google Safe Browsing, Edge SmartScreen) once reported, plus in-browser AI that reads the rendered page. The scammers' counter is <b>disposable domains</b> rotated faster than they get listed.</li>
   </ul>
   <div class="take"><div class="t">Key takeaway</div><p>The cloak is only strong against a <b>passive</b> look. One synthetic mouse-move + one glance at outbound traffic collapses it completely.</p></div>
+
+  <h3>🔬 Full detail — how detection &amp; takedown really work</h3>
+
+  <p><b>1. Traditional (file) antivirus never catches it.</b> A file scanner needs a file or binary to inspect; this page writes nothing to disk and runs entirely inside the browser's sandbox. Microsoft made this point about browser-lockers years ago — they "don't have a binary file and are mostly written in JavaScript." It's pure social engineering: the "payload" is a phone number and a frightened human.</p>
+
+  <p><b>2. Two things actually catch these — at the web layer, not the file layer:</b></p>
+  <ul class="clean">
+    <li><b>URL / domain reputation blocklists (reactive).</b> Google <b>Safe Browsing</b> (built into Chrome, Firefox, Safari) — its social-engineering policy explicitly names <i>"calling tech support"</i> scams. Microsoft <b>Defender SmartScreen</b> (Edge) checks each URL against a cloud reputation database. Weakness: a site has to be <i>found, confirmed and listed first</i> — and the average malicious site lives under ~10 minutes.</li>
+    <li><b>Content / behavioural detection (proactive — no prior listing needed).</b> Malwarebytes <b>Browser Guard</b> flags browser-lockers by behaviour. <b>Chrome (v137, 2025)</b> runs an on-device <b>Gemini Nano</b> model that reads the <i>rendered</i> page — triggered by exactly these tells: forced fullscreen, keyboard/pointer lock, fake warning pop-ups.</li>
+  </ul>
+
+  <p><b>3. How each evasion trick fares:</b></p>
+  <div class="scroll"><table>
+    <tr><th>Trick</th><th>What it defeats</th><th>What still beats it</th></tr>
+    <tr><td><b>blob: URL in an iframe</b></td><td>URL blocklists — there is no real, crawlable address to list</td><td>on-device detection (reads the rendered page anyway)</td></tr>
+    <tr><td><b>AES-encrypted payload from another domain</b></td><td>network / proxy scanners — they see only ciphertext</td><td>detection that runs <i>after</i> decryption, in the real browser</td></tr>
+    <tr><td><b>noindex, nofollow</b></td><td>search discovery only (keeps it out of Google)</td><td>security crawlers ignore robots — so it barely helps</td></tr>
+    <tr><td><b>mousemove-only trigger</b> ★</td><td>crawlers <i>and</i> human reviewers — no mouse, no scam (the strongest single trick)</td><td>on-device detection in the victim's own browser (fires after the flip)</td></tr>
+  </table></div>
+
+  <div class="take"><div class="t">Bottom line</div><p>It's <b>not</b> caught instantly, and <b>never</b> by antivirus. It dies at the URL layer — a <b>Safe Browsing / SmartScreen blocklisting</b> (which blocks it for everyone at once) once it's reported or spotted by in-browser AI. The scammers' counter is <b>disposable domains rotated faster than they get listed</b>; the real kill is <b>registrar / host takedown</b> of the infrastructure.</p></div>
+
+  <details class="acc g"><summary><span class="term">Sources</span><span class="plus">+</span></summary><div class="in">
+    <a href="https://learn.microsoft.com/en-us/windows/security/operating-system-security/virus-and-threat-protection/microsoft-defender-smartscreen/">Microsoft Defender SmartScreen docs</a> ·
+    <a href="https://www.microsoft.com/en-us/security/blog/2014/12/17/your-browser-is-not-locked/">Microsoft "Your Browser is (not) Locked"</a> ·
+    <a href="https://developers.google.com/search/docs/monitor-debug/security/social-engineering">Google Safe Browsing — social-engineering policy</a> ·
+    <a href="https://blog.google/security/using-ai-to-stop-tech-support-scams-in/">Google — using on-device AI vs tech-support scams</a> ·
+    <a href="https://www.malwarebytes.com/blog/threat-intelligence/2023/08/wooflocker2">Malwarebytes — WoofLocker teardown</a> ·
+    Cofense / Barracuda / ANY.RUN — blob-URL evasion writeups.
+  </div></div></details>
+
 </div></section>
 
 <!-- 12 -->
