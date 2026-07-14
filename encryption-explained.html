@@ -1,0 +1,176 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0f1a">
+<meta name="robots" content="noindex,nofollow">
+<title>Encryption Keys — Explained Simply</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%91%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#0b0f1a; --bg2:#111726; --card:#151d30; --line:#243049;
+    --ink:#e8ecf6; --muted:#9aa7c4; --faint:#66738f;
+    --violet:#8b5cf6; --violet2:#a78bfa;
+    --green:#22c39a; --greenbg:#0f2620; --greenline:#1f4d3f;
+    --amber:#f6b73c;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1100px 650px at 82% -8%,#17213c 0,transparent 58%),var(--bg);
+       color:var(--ink);font-family:var(--sans);line-height:1.75;-webkit-font-smoothing:antialiased}
+  a{color:var(--violet2);text-decoration:none} a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.88em;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);padding:.5px 6px;border-radius:6px;color:#cbb8ff}
+  .wrap{max-width:760px;margin:0 auto;padding:0 22px}
+  nav.top{position:sticky;top:0;z-index:60;backdrop-filter:blur(12px);background:rgba(11,15,26,.85);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;gap:12px;align-items:center;height:56px}
+  nav.top .brand{font-weight:800;white-space:nowrap} nav.top .brand .dot{color:var(--violet2)}
+  nav.top .spacer{margin-left:auto}
+  nav.top a.btn{color:var(--muted);font-size:.82rem;padding:7px 12px;border-radius:9px;border:1px solid var(--line);white-space:nowrap}
+  nav.top a.btn:hover{color:var(--ink);background:var(--bg2);border-color:var(--violet);text-decoration:none}
+  header.hero{padding:56px 0 20px}
+  .kicker{display:inline-flex;gap:8px;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--violet2);background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);padding:6px 12px;border-radius:999px}
+  h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.12;margin:16px 0 12px;letter-spacing:-.02em}
+  h1 .g{background:linear-gradient(90deg,var(--green),var(--violet2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:1.1rem;color:var(--muted)}
+  section{padding:30px 0;border-top:1px solid var(--line)}
+  h2{font-size:1.4rem;margin:0 0 10px;letter-spacing:-.01em}
+  h2 .n{color:var(--faint);font-family:var(--mono);font-size:.95rem;margin-right:10px}
+  p{color:var(--ink)} .sub{color:var(--muted)} b,strong{color:#fff}
+  .big{font-size:1.12rem}
+  .kinds{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+  @media(max-width:640px){.kinds{grid-template-columns:1fr}}
+  .kind{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+  .kind .cap{padding:14px 16px 4px;font-size:1.6rem}
+  .kind .ttl{padding:0 16px;font-weight:800;font-size:1.05rem}
+  .kind .nick{padding:2px 16px 0;font-size:.8rem;color:var(--faint);font-family:var(--mono)}
+  .kind .body{padding:12px 16px 18px;color:var(--muted);font-size:.95rem}
+  .kind .body b{color:var(--ink)}
+  .kind.a{border-color:var(--greenline)} .kind.a .ttl{color:var(--green)}
+  .kind.b{border-color:rgba(139,92,246,.4)} .kind.b .ttl{color:var(--violet2)}
+  .uses{margin-top:10px;font-weight:700;font-size:.9rem}
+  .kind.a .uses{color:var(--green)} .kind.b .uses{color:var(--faint)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.95rem}
+  th,td{padding:11px 13px;border:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:var(--bg2);color:var(--muted);font-weight:700;font-size:.82rem}
+  td b{color:#fff}
+  .scroll{overflow-x:auto}
+  .take{margin:16px 0;border:1px solid rgba(139,92,246,.35);border-left:3px solid var(--violet);border-radius:12px;background:linear-gradient(180deg,rgba(139,92,246,.09),transparent);padding:14px 16px}
+  .take .t{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--violet2);font-weight:700;margin-bottom:3px}
+  .take p{margin:0}
+  .answer{margin:16px 0;border:1px solid var(--greenline);border-radius:12px;background:var(--greenbg);padding:14px 16px}
+  .answer .t{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:3px}
+  .answer p{margin:0}
+  footer{padding:36px 0 60px;border-top:1px solid var(--line);color:var(--faint);font-size:.85rem}
+</style>
+
+<nav class="top"><div class="wrap">
+  <span class="brand">🔑 Keys<span class="dot">·</span>Explained</span>
+  <span class="spacer"></span>
+  <a class="btn" href="./study.html">← Study guide</a>
+  <a class="btn" href="./index.html">Visual teardown</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="kicker">● plain english · no code · no jargon</span>
+  <h1>The two kinds of <span class="g">keys</span>, in plain words.</h1>
+  <p class="lede">You asked a sharp question: is there one key, or two? Here's the whole thing with the jargon stripped out — and which kind this scam actually uses.</p>
+</div></header>
+
+<section><div class="wrap">
+  <h2><span class="n">1</span>First, what a "key" even is</h2>
+  <p class="big"><b>Encryption</b> = scrambling something so it looks like nonsense. <b>Decryption</b> = unscrambling it back. To do either, you need a <b>key</b> — just think of it as a <b>password</b>.</p>
+  <p>Yes — there are proper maths "recipes" (algorithms) that do this scrambling. The famous ones have names like <b>AES</b> and <b>RSA</b>. You don't need to know the maths — only <i>how the keys are used</i>. And there are exactly <b>two families</b>, based on your question:</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">2</span>The two families</h2>
+  <div class="kinds">
+    <div class="kind a">
+      <div class="cap">🔑🚪</div>
+      <div class="ttl">A · One key, same both ways</div>
+      <div class="nick">nickname: "symmetric"</div>
+      <div class="body">
+        <p style="margin:.2em 0 0"><b>Like your house key.</b> The <b>same</b> key locks the door <i>and</i> unlocks it. Whoever holds that one key can do both.</p>
+        <p><b>The catch:</b> you must keep that key secret — and if you want someone else to unscramble your message, you have to hand them the very same key, safely.</p>
+        <p>Real algorithm: <b>AES</b>. It's fast, so it's used for scrambling big things.</p>
+        <div class="uses">👉 This is what the scam page uses.</div>
+      </div>
+    </div>
+    <div class="kind b">
+      <div class="cap">📬🔐</div>
+      <div class="ttl">B · Two keys, a matched pair</div>
+      <div class="nick">nickname: "asymmetric" / "public-key"</div>
+      <div class="body">
+        <p style="margin:.2em 0 0"><b>Like a mailbox with a slot.</b> <b>Anyone</b> can drop a letter in through the slot — that's the <b>"public" key</b>, you can share it with the whole world. But <b>only you</b> have the little key that opens the box to take letters out — that's the <b>"private" key</b>, you never share it.</p>
+        <p>So one key <b>locks</b>, and a <b>different</b> key <b>unlocks</b>. They're made together as a pair.</p>
+        <p>Real algorithm: <b>RSA</b>. It's what the padlock 🔒 in your browser (HTTPS) uses to get started.</p>
+        <div class="uses">✗ Not used by this scam.</div>
+      </div>
+    </div>
+  </div>
+  <div class="answer"><div class="t">Direct answer to your a &amp; b</div><p><b>(a) Same key for both</b> → yes, that exists — it's <b>Family A (symmetric)</b>, e.g. AES. &nbsp;<b>(b) Lock with one, unlock with a different one</b> → yes, that exists too — it's <b>Family B (asymmetric)</b>, e.g. RSA.</p></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">3</span>Side by side</h2>
+  <div class="scroll"><table>
+    <tr><th></th><th>🔑 Family A — one key</th><th>📬 Family B — two keys</th></tr>
+    <tr><td><b>Same key both ways?</b></td><td>Yes (one password)</td><td>No (a locking key + a separate unlocking key)</td></tr>
+    <tr><td><b>Nickname</b></td><td>symmetric</td><td>asymmetric / public-key</td></tr>
+    <tr><td><b>Everyday picture</b></td><td>house key 🔑</td><td>mailbox slot 📬</td></tr>
+    <tr><td><b>Algorithm</b></td><td>AES</td><td>RSA</td></tr>
+    <tr><td><b>Speed</b></td><td>fast</td><td>slower</td></tr>
+    <tr><td><b>This scam uses it?</b></td><td><b style="color:var(--green)">✅ yes</b></td><td>❌ no</td></tr>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">4</span>So which does the scam use? — Family A</h2>
+  <p>The scam uses the <b>one-key kind (AES)</b>. The scammer picked a single <b>password</b>, used it to scramble the hidden "black page," and the visitor's browser uses that <b>same password</b> to unscramble it.</p>
+  <div class="take"><div class="t">Why that let us crack it open</div><p>Because it's the <b>one-key</b> kind, and that one key had to be <b>inside the page</b> for the browser to use it — so we just read it off and unscrambled everything ourselves. &nbsp;(With the <b>two-key</b> kind, even finding the locking key wouldn't help — you'd still need the separate, secret unlocking key that never leaves the owner.)</p></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">5</span>How it actually runs — broken all the way apart</h2>
+
+  <p class="big"><b>Q1. Do I feed encrypted data at the start, or does encryption happen later?</b></p>
+  <ul>
+    <li>The data is <b>already encrypted, ahead of time.</b> The scammer scrambled the hidden page <b>once</b>, on their own computer, <i>before</i> putting anything online.</li>
+    <li>The web page (in your browser) <b>never encrypts anything.</b> Its only job is to <b>un</b>scramble — decrypt.</li>
+    <li>So the order is: <b>ready-made scrambled data sits on the server → your browser downloads it → your browser unscrambles it.</b></li>
+  </ul>
+  <div class="answer"><div class="t">In one line</div><p>Encryption happened <b>earlier, offline, once</b>. The browser only ever <b>decrypts</b> — it never encrypts.</p></div>
+
+  <p class="big"><b>Q2. Is the key <i>inside</i> crypto-js? Or is crypto-js just the tool that runs the decryption?</b></p>
+  <ul>
+    <li><b>crypto-js does NOT contain the key.</b> It's just the <b>engine</b> — generic code that knows <i>how</i> to scramble and unscramble. <b>Everyone</b> downloads the exact same crypto-js; it's identical on every website in the world.</li>
+    <li><b>The key is separate.</b> It's a plain password written in the <b>page's own script</b> (<code>const PASSPHRASE = "…"</code>) — <b>not</b> inside crypto-js.</li>
+    <li>At run time, the page <b>hands the key to crypto-js</b>: "here's the scrambled text, here's the password — unscramble it." crypto-js does the turning and gives back the original.</li>
+  </ul>
+  <div class="answer"><div class="t">In one line</div><p><b>crypto-js = the machine. The key = the password you drop into the machine.</b> Two separate things — crypto-js is only <i>used to run</i> the decryption; it never holds your key.</p></div>
+
+  <p class="big"><b>Q3. The whole run, start → finish</b></p>
+  <ul>
+    <li><b>(Before anyone visits — offline)</b> Scammer scrambles the hidden page with a password → gets a blob of scrambled text.</li>
+    <li>Scammer uploads that blob to the vault server, and — inside the white page — writes the <b>password</b> and loads the <b>crypto-js</b> tool.</li>
+    <li>You open the white page → crypto-js loads, the password sits in the page, waiting.</li>
+    <li>Your mouse moves → the page <b>downloads</b> the scrambled blob from the vault.</li>
+    <li>The page tells crypto-js: <b>"unscramble THIS blob using THIS password."</b></li>
+    <li>crypto-js hands back the original hidden-page HTML.</li>
+    <li>The page shows it. <b>No encryption ever happened in your browser — only that one un-scramble step.</b></li>
+  </ul>
+
+  <div class="take"><div class="t">The whole thing in one breath</div><p>The scrambling was done <b>once, in advance</b>. Your browser only ever <b>un</b>scrambles — using a <b>password that rides inside the page</b> and a <b>generic tool (crypto-js)</b> that does the turning.</p></div>
+</div></section>
+
+
+<section><div class="wrap">
+  <h2><span class="n">6</span>About that scary command earlier — ignore it</h2>
+  <p>Earlier I showed an <code>openssl …</code> line and it looked like gibberish. Forget it — you don't need it to understand any of this.</p>
+  <p>All that command was: a <b>free tool that already comes with most computers</b>. You feed it the <b>scrambled text</b> plus the <b>password</b>, and it hands back the <b>original</b>. That's it. I only showed it to <b>prove</b> the scrambling here is an ordinary, standard method — not some custom hacker magic. The <i>idea</i> is all that matters:</p>
+  <p class="big" style="text-align:center;color:var(--green)"><b>scrambled text + password → original text.</b></p>
+</div></section>
+
+<footer><div class="wrap">
+  Plain-English companion to the <a href="./study.html">study guide</a> and <a href="./index.html">visual teardown</a>. Defensive/educational only.
+</div></footer>
