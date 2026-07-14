@@ -1,0 +1,247 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0f1a">
+<meta name="robots" content="noindex,nofollow">
+<title>Case Study — Anatomy of a Cloaked Tech-Support Scam</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%84%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#0b0f1a; --bg2:#111726; --card:#151d30; --line:#243049;
+    --ink:#e8ecf6; --muted:#9aa7c4; --faint:#66738f;
+    --violet:#8b5cf6; --violet2:#a78bfa;
+    --green:#22c39a; --greenbg:#0f2620; --greenline:#1f4d3f;
+    --amber:#f6b73c; --red:#f2555a; --redbg:#2a1418; --redline:#5a2530;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(1100px 650px at 82% -8%,#17213c 0,transparent 58%),var(--bg);
+       color:var(--ink);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--violet2);text-decoration:none} a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.85em;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);padding:.5px 6px;border-radius:6px;color:#cbb8ff;word-break:break-word}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  nav.top{position:sticky;top:0;z-index:60;backdrop-filter:blur(12px);background:rgba(11,15,26,.85);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;gap:10px;align-items:center;height:56px;overflow-x:auto}
+  nav.top .brand{font-weight:800;white-space:nowrap} nav.top .brand .dot{color:var(--violet2)}
+  nav.top .spacer{margin-left:auto}
+  nav.top a.btn,nav.top button.btn{color:var(--muted);font-size:.82rem;padding:7px 12px;border-radius:9px;border:1px solid var(--line);white-space:nowrap;background:transparent;cursor:pointer;font-family:var(--sans)}
+  nav.top a.btn:hover,nav.top button.btn:hover{color:var(--ink);background:var(--bg2);border-color:var(--violet);text-decoration:none}
+  nav.top button.print{color:var(--violet2);border-color:rgba(139,92,246,.5)}
+
+  .cover{padding:52px 0 26px;border-bottom:1px solid var(--line)}
+  .doctype{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--violet2)}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem);line-height:1.15;margin:12px 0 8px;letter-spacing:-.02em}
+  .subtitle{color:var(--muted);font-size:1.06rem;max-width:660px}
+  .meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;font-size:.86rem;color:var(--faint)}
+  .meta b{color:var(--ink);font-weight:600}
+  .fill{border-bottom:1px solid var(--line);display:inline-block;min-width:150px}
+
+  section{padding:30px 0;border-top:1px solid var(--line)}
+  h2{font-size:1.35rem;margin:0 0 10px;letter-spacing:-.01em}
+  h2 .n{color:var(--violet2);font-family:var(--mono);font-size:1rem;margin-right:10px}
+  h3{font-size:1.02rem;margin:20px 0 6px;color:#fff}
+  p{color:var(--ink)} .sub{color:var(--muted)} b,strong{color:#fff}
+  .abstract{border:1px solid var(--line);border-left:3px solid var(--violet);border-radius:12px;background:var(--card);padding:16px 18px;color:var(--muted)}
+  .abstract b{color:var(--ink)}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.9rem}
+  th,td{padding:9px 12px;border:1px solid var(--line);text-align:left;vertical-align:top}
+  th{background:var(--bg2);color:var(--muted);font-weight:700;font-size:.8rem}
+  td b{color:#fff}
+  .scroll{overflow-x:auto}
+  .attid{font-family:var(--mono);font-size:.82rem;color:var(--amber);white-space:nowrap}
+
+  .chain{counter-reset:s;margin:14px 0}
+  .stp{position:relative;display:flex;gap:15px;padding:0 0 20px}
+  .stp:last-child{padding-bottom:0}
+  .stp .d{flex:0 0 32px;height:32px;width:32px;border-radius:50%;display:grid;place-items:center;background:var(--bg2);border:1px solid var(--line);font-family:var(--mono);font-weight:700;color:var(--violet2);font-size:.85rem;z-index:2}
+  .stp:not(:last-child)::before{content:"";position:absolute;left:16px;top:32px;bottom:0;width:2px;background:var(--line)}
+  .stp .c{flex:1;padding-top:3px}
+  .stp .c .ph{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .stp .c b{color:#fff}
+
+  ul.clean{padding-left:20px} ul.clean li{margin:6px 0} ul.clean li::marker{color:var(--violet2)}
+  .box{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:14px 16px;margin:14px 0}
+  .box.g{border-color:var(--greenline);background:var(--greenbg)}
+  .box.r{border-color:var(--redline);background:var(--redbg)}
+  .box .t{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+  .box.g .t{color:var(--green)} .box.r .t{color:var(--red)}
+  .ioc{font-family:var(--mono);font-size:.84rem;word-break:break-all}
+  footer{padding:34px 0 60px;border-top:1px solid var(--line);color:var(--faint);font-size:.84rem}
+  .refs{font-size:.85rem;color:var(--muted)} .refs li{margin:5px 0}
+
+  @media print{
+    nav.top,.noprint{display:none !important}
+    body{background:#fff !important;color:#111 !important}
+    .wrap{max-width:100%}
+    h1,h2,h3,b,strong,td b,.subtitle,p{color:#111 !important}
+    h2 .n,.attid{color:#333 !important}
+    a{color:#0645ad !important;text-decoration:underline}
+    section,.cover{border-color:#bbb !important}
+    table,th,td{border-color:#999 !important}
+    th{background:#eee !important;color:#111 !important}
+    .abstract,.box,.card{background:#f5f5f5 !important;border-color:#bbb !important;color:#222 !important}
+    .abstract b,.box b{color:#000 !important}
+    code{background:#eee !important;color:#111 !important;border-color:#ccc !important}
+    .stp .d{background:#eee !important;color:#111 !important;border-color:#999 !important}
+    a[href^="http"]::after{content:" (" attr(href) ")";font-size:.8em;color:#555;word-break:break-all}
+    section{page-break-inside:avoid}
+    h2{page-break-after:avoid}
+  }
+</style>
+
+<nav class="top"><div class="wrap">
+  <span class="brand">📄 Case<span class="dot">·</span>Study</span>
+  <span class="spacer"></span>
+  <button class="btn print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <a class="btn" href="./study.html">Study guide</a>
+  <a class="btn" href="./index.html">Teardown</a>
+</div></nav>
+
+<header class="cover"><div class="wrap">
+  <div class="doctype">Cybersecurity Case Study · Defensive Analysis</div>
+  <h1>Anatomy of a Cloaked Tech-Support Scam Delivered via Google Ads</h1>
+  <p class="subtitle">A step-by-step reconstruction of how an ad-cloaking operation ("kelveronia") hides a fake-Microsoft tech-support scam from ad reviewers while serving it to real victims — and how it is detected and dismantled.</p>
+  <div class="meta">
+    <span>Analyst: <span class="fill">&nbsp;</span></span>
+    <span>Date: <b>July 2026</b></span>
+    <span>Classification: <b>Educational / Defensive</b></span>
+    <span>Sample: <b>live, captured in isolation</b></span>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <h2>Abstract</h2>
+  <div class="abstract">
+    <p style="margin:.2em 0">This case study dissects a live malvertising campaign that used <b>client-side cloaking</b> to pass Google Ads review. A single URL served two entirely different pages: a benign "ShopEase" storefront to any automated reviewer, and — only after a real <b>mouse movement</b> — a fake <b>"Microsoft Support"</b> browser-locker that pressures victims into calling a fraudulent call-centre (<code>+1-866-881-5397</code>). The malicious page was never present in the source: it was fetched <b>AES-encrypted</b> from a second, Cloudflare-fronted server and rebuilt in memory as a <code>blob:</code> URL inside a hidden iframe, leaving no crawlable address. The operation is notable not for sophisticated code, but for a chain of cheap evasions that each defeat a specific layer of automated defence.</p>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">1</span>Objective (the attackers' goal)</h2>
+  <p>The operators run a <b>tech-support scam</b>: frighten a user into believing their computer is infected, then get them to phone a fake "Microsoft" number where an operator sells bogus "support" and/or obtains remote access and payment.</p>
+  <p>To feed victims to that page cheaply and at scale, they buy <b>Google Search/Display ads</b>. The obstacle: Google's automated review would instantly reject a fake-Microsoft page. Their core problem is therefore <b>not technical delivery but review evasion</b> — the ad, and its landing page, must look 100% legitimate to Google's bots while showing the scam only to humans. Every design choice below serves that single goal.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">2</span>Infrastructure (what they built)</h2>
+  <div class="scroll"><table>
+    <tr><th>Component</th><th>Where</th><th>Role</th></tr>
+    <tr><td><b>Traffic source</b></td><td>Google Ads (campaign id <code>24000514959</code>, <code>gclid</code> present)</td><td>drives paid clicks to the landing page</td></tr>
+    <tr><td><b>"White" landing page</b></td><td>DigitalOcean Spaces CDN — <code>kelveronia.nyc3.cdn.digitaloceanspaces.com</code></td><td>fake "ShopEase" store + the cloaking script; static host (no server code needed)</td></tr>
+    <tr><td><b>Payload vault</b></td><td><code>node.apigetdata.click</code> — behind Cloudflare (172.67.214.162 / 104.21.45.130)</td><td>serves the AES-encrypted "black" page on demand; true origin IP hidden</td></tr>
+    <tr><td><b>TLS</b></td><td>Google Trust Services cert, issued 10 Jul 2026</td><td>fresh, free cert — consistent with disposable, short-lived infrastructure</td></tr>
+    <tr><td><b>Analytics</b></td><td>GA4, Plausible-style, Histats (on the white page)</td><td>the operators measure their own conversion funnel</td></tr>
+  </table></div>
+  <p class="sub">Two hard-coded keys were left in the landing page's own source: <code>URL_KEY="UrLk3yShopEase01"</code> (decrypts the hidden vault URL) and <code>PASSPHRASE="98yNCjeAfWMwk0wI"</code> (decrypts the payload).</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">3</span>The attack chain, step by step</h2>
+  <div class="chain">
+    <div class="stp"><div class="d">0</div><div class="c"><div class="ph">Preparation (offline)</div><b>Stage the two-sided site.</b> Build the benign "ShopEase" page and embed the cloaking script + two keys. Separately, AES-encrypt the fake-Microsoft page and place the ciphertext on the vault server. Register/point the ad campaign at the landing URL.</div></div>
+    <div class="stp"><div class="d">1</div><div class="c"><div class="ph">Delivery</div><b>Buy the click.</b> A Google ad drives a visitor to the white page (arriving with a <code>gclid</code>). Google's review system has already seen — and approved — only the clean store.</div></div>
+    <div class="stp"><div class="d">2</div><div class="c"><div class="ph">Arming</div><b>Load &amp; wait.</b> The page renders the store behind a "Loading… please wait" overlay and registers a single <code>mousemove</code> listener (<code>{once:true}</code>). Nothing malicious is present yet; a source scan finds only a shop.</div></div>
+    <div class="stp"><div class="d">3</div><div class="c"><div class="ph">Evasion / triage</div><b>Human check.</b> If no mouse ever moves (automated reviewer, crawler, sandbox) the page stays clean forever. A real cursor movement is treated as proof of a human and fires the payload routine.</div></div>
+    <div class="stp"><div class="d">4</div><div class="c"><div class="ph">Retrieval</div><b>Phone home.</b> The script decrypts the vault URL with <code>URL_KEY</code>, then fetches <code>node.apigetdata.click/data?platform=win|mac</code> — receiving ~4.4 MB of ciphertext tailored to the victim's OS.</div></div>
+    <div class="stp"><div class="d">5</div><div class="c"><div class="ph">Decrypt &amp; assemble</div><b>Rebuild in memory.</b> The ciphertext is AES-decrypted in-browser with <code>PASSPHRASE</code>, converted to a <code>blob:</code> URL, and loaded into a hidden <code>&lt;iframe&gt;</code>. The store is hidden; the iframe is shown.</div></div>
+    <div class="stp"><div class="d">6</div><div class="c"><div class="ph">Execution / impact</div><b>Trap the victim.</b> A full-screen fake "Microsoft Support" page appears (fake command prompt, autoplay scare-audio), grabs full-screen, blocks tab-close (<code>onbeforeunload</code>) and disables keys — pushing the victim to call <code>+1-866-881-5397</code>.</div></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">4</span>Evasion techniques — and the defence each defeats</h2>
+  <div class="scroll"><table>
+    <tr><th>Technique</th><th>How it's used here</th><th>Defence it defeats</th></tr>
+    <tr><td><b>Client-side cloaking via user-interaction check</b></td><td>malicious branch fires only on a real <code>mousemove</code></td><td>automated ad review, crawlers, headless sandboxes (no cursor input)</td></tr>
+    <tr><td><b>Payload obfuscation (encryption-as-obfuscation)</b></td><td>black page shipped AES-encrypted; key embedded in page</td><td>static source scanners &amp; network/proxy inspection (see only ciphertext)</td></tr>
+    <tr><td><b>In-memory HTML smuggling</b></td><td>decrypted HTML rendered from a <code>blob:</code> URL in an iframe</td><td>URL/domain blocklists — there is no real, crawlable address to list</td></tr>
+    <tr><td><b>Second-origin staging</b></td><td>payload lives on a different domain from the clean CDN page</td><td>keeps the "approved" landing domain looking clean to the ad network</td></tr>
+    <tr><td><b>Reverse-proxy IP masking</b></td><td>vault behind Cloudflare; disposable fresh TLS cert</td><td>origin attribution &amp; takedown (hides the true server)</td></tr>
+    <tr><td><b>OS-targeted payloads</b></td><td><code>?platform=win|mac</code> serves a tailored lure</td><td>reduces "broken page" tells; increases victim believability</td></tr>
+    <tr><td><b>Search suppression</b></td><td><code>meta robots=noindex,nofollow</code></td><td>keeps the page out of search indexes (lower footprint / harder to find &amp; report)</td></tr>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">5</span>MITRE ATT&amp;CK mapping</h2>
+  <p class="sub">Closest enterprise techniques (approximate mapping for study purposes):</p>
+  <div class="scroll"><table>
+    <tr><th>Tactic</th><th>Technique</th><th>ID</th></tr>
+    <tr><td>Resource Development</td><td>Acquire Infrastructure: Domains</td><td class="attid">T1583.001</td></tr>
+    <tr><td>Resource Development</td><td>Acquire Infrastructure: Web Services</td><td class="attid">T1583.006</td></tr>
+    <tr><td>Resource Development</td><td>Acquire Infrastructure: Malvertising</td><td class="attid">T1583.008</td></tr>
+    <tr><td>Initial Access / Execution</td><td>User Execution: Malicious Link</td><td class="attid">T1204.001</td></tr>
+    <tr><td>Defense Evasion</td><td>Obfuscated Files or Information</td><td class="attid">T1027</td></tr>
+    <tr><td>Defense Evasion</td><td>Obfuscated Files or Information: HTML Smuggling</td><td class="attid">T1027.006</td></tr>
+    <tr><td>Defense Evasion</td><td>Virtualization/Sandbox Evasion: User Activity Based Checks</td><td class="attid">T1497.002</td></tr>
+    <tr><td>Impact / Social Eng.</td><td>Impersonation (of Microsoft)</td><td class="attid">T1656</td></tr>
+    <tr><td>Impact</td><td>Financial Theft</td><td class="attid">T1657</td></tr>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">6</span>Indicators of Compromise (IOCs)</h2>
+  <div class="scroll"><table>
+    <tr><th>Type</th><th>Indicator</th></tr>
+    <tr><td>Landing URL</td><td class="ioc">kelveronia.nyc3.cdn.digitaloceanspaces.com/index.html</td></tr>
+    <tr><td>Payload host</td><td class="ioc">node.apigetdata.click &nbsp;(/data?platform=win|mac)</td></tr>
+    <tr><td>Vault IPs (Cloudflare)</td><td class="ioc">172.67.214.162 · 104.21.45.130</td></tr>
+    <tr><td>Scam phone number</td><td class="ioc">+1-866-881-5397</td></tr>
+    <tr><td>Ad campaign id</td><td class="ioc">24000514959</td></tr>
+    <tr><td>Embedded keys</td><td class="ioc">URL_KEY = UrLk3yShopEase01 · PASSPHRASE = 98yNCjeAfWMwk0wI</td></tr>
+    <tr><td>Behavioural tells</td><td>crypto-js + one-time <code>mousemove</code> listener + <code>blob:</code> iframe + outbound fetch to a second domain</td></tr>
+  </table></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">7</span>Victim impact</h2>
+  <p>A victim who moves their mouse sees a convincing full-screen Microsoft-branded "your computer is infected" lockscreen they cannot easily close. Believing it, they call the number and reach a scam operator, whose typical outcomes are: paying for worthless "support/antivirus," granting <b>remote access</b> (enabling data theft or real malware), and/or handing over card details — i.e. financial loss and potential follow-on compromise.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">8</span>Detection &amp; remediation (blue-team)</h2>
+  <div class="box g"><div class="t">How to detect it</div>
+    <ul class="clean" style="margin:.2em 0">
+      <li><b>Dynamic analysis with synthetic input:</b> drive the page headless <i>and dispatch a <code>mousemove</code></i> — the cloak flips and self-reveals. This single step defeats the whole gate.</li>
+      <li><b>Egress monitoring:</b> a static "shop" that, on interaction, fetches a large blob from a <i>different</i> domain is the fingerprint.</li>
+      <li><b>On-device content heuristics:</b> modern browsers (Chrome's on-device model; Edge SmartScreen; Malwarebytes Browser Guard) flag the rendered page by behaviour — forced fullscreen, keyboard/pointer lock, fake warnings — regardless of blob/encryption.</li>
+      <li><b>Why file-AV misses it:</b> nothing is written to disk; it is pure browser-based social engineering.</li>
+    </ul>
+  </div>
+  <div class="box r"><div class="t">How to kill it</div>
+    <ul class="clean" style="margin:.2em 0">
+      <li>Report the landing URL &amp; payload host to <b>Google Safe Browsing</b> and <b>Microsoft SmartScreen</b> (one listing blocks it for entire browser user-bases).</li>
+      <li>File <b>abuse reports</b>: DigitalOcean (Spaces object), Cloudflare (proxied vault), the <code>.click</code> registrar for <code>apigetdata.click</code>, and the Google Ads account behind the <code>gclid</code>.</li>
+      <li>Report the phone number to carrier/FTC-style fraud channels.</li>
+      <li><b>Reality check:</b> blocklisting kills one URL; operators rotate disposable domains faster than listings propagate, so <b>registrar/host takedown</b> of the infrastructure is the durable fix.</li>
+    </ul>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2><span class="n">9</span>Lessons learned</h2>
+  <ul class="clean">
+    <li><b>Cheap evasion beats expensive code.</b> No exploit is used — just a stack of low-effort tricks, each defeating one automated layer.</li>
+    <li><b>"Encryption" without a hidden key is only obfuscation.</b> The embedded keys made the payload fully recoverable by an analyst; it only ever slowed down passive scanners.</li>
+    <li><b>The cloak is strong only against a passive look.</b> One synthetic <code>mousemove</code> plus egress inspection collapses the entire scheme — which is exactly why active, in-browser, behaviour-based detection is the effective countermeasure.</li>
+    <li><b>Ad networks are part of the attack surface.</b> The whole design exists to defeat ad review; defence must include reviewer tooling that simulates human interaction.</li>
+  </ul>
+</div></section>
+
+<section><div class="wrap">
+  <h2>References</h2>
+  <ul class="refs">
+    <li>Google — Safe Browsing social-engineering policy (tech-support scams).</li>
+    <li>Google Security Blog — on-device AI vs tech-support scams (2025).</li>
+    <li>Microsoft — Defender SmartScreen documentation; "Your Browser is (not) Locked" (browser lockers).</li>
+    <li>Malwarebytes — Browser Guard heuristics; WoofLocker/404Browlock teardown.</li>
+    <li>MITRE ATT&amp;CK — Enterprise techniques T1583, T1204, T1027, T1497, T1656, T1657.</li>
+    <li>Primary analysis: companion <a href="./index.html">visual teardown</a>, <a href="./study.html">study guide</a>, <a href="./encryption-explained.html">keys</a> &amp; <a href="./crypto-sandbox.html">crypto sandbox</a>.</li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">
+  Prepared as a defensive security case study for educational use. The malicious sample was analysed in isolation; no payload was executed against users. All indicators are documented so they can be reported and blocked.
+</div></footer>
