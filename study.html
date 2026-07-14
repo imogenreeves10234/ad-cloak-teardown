@@ -241,6 +241,40 @@
   <div class="analogy">🔧 <b>Analogy:</b> this page is a locked box that arrives <b>with the key taped to the lid</b>. The "recipe" (the <code>crypto-js</code> library) and both keys are shipped <i>inside the page</i>, so your browser unlocks it itself, instantly. No website needed.</div>
   <div class="take"><div class="t">Key takeaway — the important one</div><p>Because the key travels <b>with</b> the page, this "encryption" is really just a <b>disguise</b>. It fools a lazy scanner that only <i>reads</i> the page's text — but not anyone who <i>runs</i> it or knows to grab the key. That's exactly why we cracked it open. → <b>Obfuscation, not protection.</b></p></div>
 
+  <h3>❓ "Encryption" or "obfuscation"? — clearing up the confusion</h3>
+  <p class="sub">I've used both words, and you're right to notice — here's why <b>both are correct for this page</b>, and how they actually differ.</p>
+
+  <p><b>They are not the same thing:</b></p>
+  <div class="scroll"><table>
+    <tr><th></th><th>🔐 Encryption</th><th>🎭 Obfuscation</th></tr>
+    <tr><td><b>What it is</b></td><td>a reversible scramble locked by a <b>secret key</b></td><td>making text <b>hard to read</b>, with <b>no secret</b> involved</td></tr>
+    <tr><td><b>What keeps it hidden</b></td><td>the key stays secret</td><td>just effort / annoyance</td></tr>
+    <tr><td><b>Can someone reverse it?</b></td><td>No — not without the key (AES is unbreakable in practice)</td><td>Yes — everything needed to undo it is right there</td></tr>
+    <tr><td><b>Examples</b></td><td>AES, RSA, HTTPS/TLS</td><td>Base64, minified JS, renamed variables, ROT13</td></tr>
+    <tr><td><b>Analogy</b></td><td>a real padlock 🔒</td><td>a sticker slapped over the label 🏷️</td></tr>
+  </table></div>
+
+  <div class="take"><div class="t">The one-question litmus test</div><p>Ask: <b>"Is there a secret that must be kept for this to stay hidden?"</b> &nbsp;→ <b>Yes = encryption. No = obfuscation</b> (even if it looks like scrambled gibberish).</p></div>
+
+  <h3 style="font-size:1rem">So which is this page? — <span style="color:var(--amber)">both</span></h3>
+  <p>It runs <b>AES, a genuine encryption algorithm</b> — that's why I say "encryption/decryption with a key." <b>But</b> the key is printed right there in the page so the browser can use it. The moment the key isn't secret, the lock protects nothing from anyone who bothers to look — so in <i>effect</i> it's just <b>obfuscation</b>: a speed-bump for lazy scanners, not a real lock. That's the heart of this lesson: <b>an encryption tool, used to get an obfuscation result.</b></p>
+
+  <h3 style="font-size:1rem">"Obfuscation is just garbling text — how does that actually work?"</h3>
+  <p class="sub">Correct. Common techniques, from weakest to sneakier:</p>
+  <ul class="clean">
+    <li><b>Encoding</b> (e.g. Base64) — rewrites text in a different alphabet. <code>hello</code> → <code>aGVsbG8=</code>. Not encryption at all: no key, decode in one click.</li>
+    <li><b>Minify / rename</b> — rename <code>passphrase</code> → <code>a</code>, strip all spaces &amp; line breaks. Unreadable to a human, runs identically.</li>
+    <li><b>String hiding</b> — store <code>"apigetdata.click"</code> as hex or character-codes and rebuild it at runtime, so the domain never appears as plain text.</li>
+    <li><b>Packing / <code>eval</code></b> — wrap the real code in <code>eval(atob("…"))</code>, so you only see a blob until it runs.</li>
+    <li><b>Encryption-as-obfuscation</b> (← this specimen) — AES-scramble it, but ship the key. Looks like ciphertext, reverses trivially once you spot the key.</li>
+  </ul>
+
+  <h3 style="font-size:1rem">"Is there a tool to do it?"</h3>
+  <p>Yes — obfuscation is a common, <b>dual-use</b> thing (legit software uses it to protect its own code and to shrink files). Public tools exist: the well-known open-source <code>javascript-obfuscator</code> (obfuscator.io), minifiers like <b>Terser</b>, or just <code>btoa()</code>/<code>openssl</code> for encoding/scrambling. <b>But here's the cybersecurity point:</b> every one of them is <b>reversible</b>. The real skill isn't obfuscating — it's <b>de-obfuscating</b>: pretty-print the code, decode the Base64, grab the key and the hidden strings — exactly what we did to crack this page open. Obfuscation raises the effort to read something; it never gives real secrecy.</p>
+
+  <div class="analogy">🧠 <b>Remember it like this:</b> encryption is a <b>locked safe</b> (useless to a thief without the combination). Obfuscation is a <b>document run through a shredder-and-taped-back-together</b> — annoying, but anyone patient enough can reassemble it. This page is a safe <i>with the combination written on the door</i> — so it's really just the shredder.</div>
+
+
   <h3>🔬 Full detail — exactly how the lock &amp; unlock work</h3>
   <p class="sub">Plain steps first, then the precise technical recipe underneath.</p>
   <p><b>There are two separate locks in this one page:</b></p>
